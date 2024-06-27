@@ -21,7 +21,9 @@ jobs:
           node-version: '14'
 
       - name: Install dependencies
-        run: npm install axios
+        run: | 
+          npm install axios
+          npm install cheerio
 
       - name: Run fetchData script
         run: node fetchData.js
