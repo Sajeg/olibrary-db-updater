@@ -1,0 +1,16 @@
+{
+  "name": "olibrary-db-updater",
+  "version": "1.0.0",
+  "description": "",
+  "main": "fetchData.js",
+  "scripts": {
+    "start": "node fetchData.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}
