@@ -27,12 +27,14 @@ async function fetchData() {
 
     console.log("Waited until it loads")
 
-    await scrapData(await page.content())
-
+    let pageContent = await page.content();
+    await scrapData(pageContent);
     console.log("Scraped Data");
 
-    while (await hasNextPage(await page.content()) && siteNumber < 5) {
-        await page.click('a.arena-navigation-arrow');
+    let nextPage = await hasNextPage(pageContent);
+
+    while (nextPage) {
+        await page.click('a.arena-navigation-arrow[title="Nächte Seite"]');
 
         siteNumber++;
         console.log("Navigated to page " + siteNumber);
@@ -40,11 +42,15 @@ async function fetchData() {
         await page.waitForSelector('.arena-record-container', {timeout: 5000})
 
         console.log("Waited until it loaded")
-
-        await scrapData(await page.content())
+        pageContent = await page.content();
+        await scrapData(pageContent)
 
         console.log("Scraped Data");
+        nextPage = await hasNextPage(pageContent);
     }
+
+    await browser.close();
+    console.log("Closed browser");
 
     const isoDate = new Date().toISOString();
     const saveData = {
@@ -89,8 +95,14 @@ async function scrapData(html) {
 
 async function hasNextPage(html) {
     const $ = cheerio.load(html);
-    const hasHrefLink = $('span.arena-navigation-arrow').attr('href') !== undefined;
-    return true;
+    let pageNavigation = $('.arena-header .arena-navigation-arrow');
+    let url
+    pageNavigation.each((i, el) => {
+        if ($(el).attr('title') === "Nächte Seite") {
+            url = $(el).attr('href');
+        }
+    })
+    return url !== undefined;
 }
 
 fetchData();
