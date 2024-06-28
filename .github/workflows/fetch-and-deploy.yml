@@ -2,7 +2,7 @@ name: Fetch Data
 
 on:
   schedule:
-    - cron: '0 3 * * 5' # Runs once in a week at 3:00
+    - cron: '0 0 * * 5' # Runs once every friday at 2:00 am German time
   push:
     branches:
       - main
@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.7
+        with:
+          lfs: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4.0.2
@@ -27,12 +29,19 @@ jobs:
       - name: Run fetchData script
         run: node fetchData.js
 
+      - name: Set up Git LFS
+        run: |
+          git lfs install
+          git lfs track "*.json"
+          git add .gitattributes
+          git commit -m "Track JSON files with Git LFS" || true
+
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add data.json
-          git commit -m 'Update data.json'
+          git commit -m 'Update data.json' || echo "No changes to commit"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
