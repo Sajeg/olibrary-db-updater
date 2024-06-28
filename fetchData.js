@@ -77,6 +77,7 @@ async function scrapData(html) {
         const year = $(el).find('.arena-record-year .arena-value').text();
         const language = $(el).find('.arena-record-language .arena-value').text().trim();
         const genre = $(el).find('.arena-record-genre .arena-value').text();
+        const series = $(el).find('.arena-record-series .arena-value').text();
         const imgUrl = "https://www.stadtbibliothek.oldenburg.de/" + $(el).find('.arena-book-jacket a img').attr('src');
         const url = $(el).find('.arena-record-title a').attr('href');
 
@@ -87,6 +88,7 @@ async function scrapData(html) {
             year,
             language,
             genre,
+            series,
             imgUrl,
             url
         })
