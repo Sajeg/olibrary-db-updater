@@ -118,7 +118,13 @@ async function fetchData() {
 
         // Save the title to a JSON file
 
-        fs.writeFileSync('data.json', JSON.stringify(output, null, 2));
+        const isoDate = new Date().toISOString();
+        const saveData = {
+            last_update: isoDate,
+            books: output
+        }
+
+        fs.writeFileSync('data.json', JSON.stringify(saveData, null, 2));
         console.log('Data saved to data.json');
 
     } catch
