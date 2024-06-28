@@ -1,4 +1,4 @@
-name: Fetch and Deploy Data
+name: Fetch Data
 
 on:
   schedule:
