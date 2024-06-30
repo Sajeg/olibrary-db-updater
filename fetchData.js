@@ -35,17 +35,21 @@ async function fetchData() {
 
     while (nextPage) {
         await page.click('a.arena-navigation-arrow[title="Nächte Seite"]');
-
         siteNumber++;
         console.log("Navigated to page " + siteNumber);
 
-        await page.waitForSelector('.arena-record-container', {timeout: 5000})
-
+        try {
+            await page.waitForSelector('.arena-record-container', {timeout: 5000})
+        } catch (e) {
+            await page.reload()
+            await page.waitForSelector('.arena-record-container', {timeout: 5000})
+        }
         console.log("Waited until it loaded")
+
         pageContent = await page.content();
         await scrapData(pageContent)
-
         console.log("Scraped Data");
+
         nextPage = await hasNextPage(pageContent);
     }
 
@@ -53,13 +57,13 @@ async function fetchData() {
     console.log("Closed browser");
 
     const isoDate = new Date().toISOString();
-    const saveData = {
+    const info = {
         last_update: isoDate,
-        books: output
     }
 
-    fs.writeFileSync('data.json', JSON.stringify(saveData, null, 2));
-    console.log('Saved Data to data.json');
+    fs.writeFileSync('info.json', JSON.stringify(info, null, 2));
+    fs.writeFileSync('data.json', JSON.stringify(output, null, 2));
+    console.log('Finished updating the books');
 }
 
 async function scrapData(html) {
@@ -78,7 +82,7 @@ async function scrapData(html) {
         const language = $(el).find('.arena-record-language .arena-value').text().trim();
         const genre = $(el).find('.arena-record-genre .arena-value').text();
         const series = $(el).find('.arena-record-series .arena-value').text();
-        const imgUrl = "https://www.stadtbibliothek.oldenburg.de/" + $(el).find('.arena-book-jacket a img').attr('src');
+        const imgUrl = "https://www.stadtbibliothek.oldenburg.de" + $(el).find('.arena-book-jacket a img').attr('src');
         const url = $(el).find('.arena-record-title a').attr('href');
 
         output.push({
