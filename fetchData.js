@@ -34,23 +34,29 @@ async function fetchData() {
     let nextPage = await hasNextPage(pageContent);
 
     while (nextPage) {
-        await page.click('a.arena-navigation-arrow[title="Nächte Seite"]');
-        siteNumber++;
         console.log("Navigated to page " + siteNumber);
 
         try {
-            await page.waitForSelector('.arena-record-container', {timeout: 5000})
+            await page.waitForSelector('.arena-record-container', { timeout: 5000 });
         } catch (e) {
-            await page.reload()
-            await page.waitForSelector('.arena-record-container', {timeout: 5000})
+            console.error('Failed to find the .arena-record-container, trying to reload...');
+            await page.reload({ waitUntil: 'networkidle2' });
+            await page.waitForSelector('.arena-record-container', { timeout: 5000 });
         }
-        console.log("Waited until it loaded")
+        console.log("Waited until it loaded");
 
-        pageContent = await page.content();
-        await scrapData(pageContent)
+        const pageContent = await page.content();
+        await scrapData(pageContent);
         console.log("Scraped Data");
 
         nextPage = await hasNextPage(pageContent);
+        if (nextPage) {
+            await Promise.all([
+                page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }),
+                page.click('a.arena-navigation-arrow[title="Nächste Seite"]')
+            ]);
+            siteNumber++;
+        }
     }
 
     await browser.close();

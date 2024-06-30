@@ -10,6 +10,7 @@
   "author": "Sajeg",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.2",
     "cheerio": "^1.0.0-rc.12",
     "puppeteer": "^22.12.1"
   }
