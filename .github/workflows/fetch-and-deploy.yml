@@ -1,8 +1,8 @@
 name: Fetch Data
 
 on:
-  schedule:
-    - cron: '0 0 * * 5' # Runs once every friday at 2:00 am German time
+  #schedule:
+  #  - cron: '0 0 * * 5' # Runs once every friday at 2:00 am German time
   push:
     branches:
       - main
